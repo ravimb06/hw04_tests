@@ -14,12 +14,12 @@ class PostURLTests(TestCase):
         cls.group = Group.objects.create(
             title='Группа для теста',
             slug='test-slug',
-            description = 'Тестовое описание',
+            description='Тестовое описание',
         )
         # Создадим запись в БД для проверки доступности адреса task/test-slug/
         cls.post = Post.objects.create(
             text='Тестовый текст поста',
-            author = cls.user,
+            author=cls.user,
         )
 
     def setUp(self):
@@ -32,7 +32,6 @@ class PostURLTests(TestCase):
         # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
 
-    
     def test_urls_exists_at_desired_location(self):
         """Страницы доступны любому пользователю."""
         group = PostURLTests.group

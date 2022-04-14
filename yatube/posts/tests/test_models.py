@@ -21,10 +21,9 @@ class PostModelTest(TestCase):
             text='Тестовая пост больше пятнадцати символов',
         )
 
-
     def test_models_have_correct_object_names(self):
         """Проверяем, что у моделей корректно работает __str__."""
         group = PostModelTest.group
         post = PostModelTest.post
-        self.assertEqual(str(group),group.title)
+        self.assertEqual(str(group), group.title)
         self.assertEqual(str(post), post.text[:15])

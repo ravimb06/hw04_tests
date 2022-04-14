@@ -20,10 +20,10 @@ class PostFormTests(TestCase):
         )
         # Создаем запись в базе данных для проверки сушествующего slug
         cls.post = Post.objects.create(
-                group=cls.group,
-                author=cls.user,
-                text='Тестовый Текстовый пост ',
-            )
+            group=cls.group,
+            author=cls.user,
+            text='Тестовый Текстовый пост ',
+        )
         # Создаем форму, если нужна проверка атрибутов
         cls.form = PostForm()
 
@@ -49,7 +49,7 @@ class PostFormTests(TestCase):
         self.assertRedirects(
             response, reverse('posts:profile', kwargs={'username': self.user})
         )
-        self.assertEqual(Post.objects.count(), posts_count+1)
+        self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
                 text=self.post.text,

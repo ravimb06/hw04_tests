@@ -91,8 +91,8 @@ class PostViewTest(TestCase):
 
     def test_second_page_records_group_list(self):
         """Группа.Проверяем пагинатор на второй странице группы."""
-        response = self.client.get(
-            reverse('posts:group_list', kwargs={'slug': self.group.slug}) + '?page=2'
+        response = self.client.get(reverse(
+            'posts:group_list', kwargs={'slug': self.group.slug}) + '?page=2'
         )
         self.assertEqual(len(response.context['page_obj']), 2)
 
@@ -121,13 +121,13 @@ class PostViewTest(TestCase):
 
     def test_second_page_records_profile(self):
         """Профиль.Проверяем пагинатор на второй странице."""
-        response = self.client.get(
-            reverse('posts:profile', kwargs={'username': 'TestMan'}) + '?page=2'
+        response = self.client.get(reverse(
+            'posts:profile', kwargs={'username': 'TestMan'}) + '?page=2'
         )
         self.assertEqual(len(response.context['page_obj']), 2)
-    
+
     def test_post_detail_page_show_correct_context(self):
-        """Отдельный пост.Проверяем соответствует ли ожиданиям словарь context."""
+        """Отдельный пост.Проверяем словарь context."""
         response = self.authorized_client.get(
             reverse('posts:post_detail', kwargs={'post_id': 5})
         )
@@ -140,7 +140,7 @@ class PostViewTest(TestCase):
         self.assertEqual(response.context.get('post').text, self.post.text)
 
     def test_create_post_page_show_correct_context(self):
-        """Форма создания поста.Проверяем соответствует ли ожиданиям словарь context."""
+        """Форма создания поста.Проверяем словарь context."""
         response = self.authorized_client.get(reverse('posts:post_create'))
         form_fields = {
             'text': forms.fields.CharField,
@@ -152,7 +152,7 @@ class PostViewTest(TestCase):
                 self.assertIsInstance(form_field, expected)
 
     def test_edit_post_page_show_correct_context(self):
-        """Форма редактирования поста.Проверяем соответствует ли ожиданиям словарь context."""
+        """Форма редактирования поста.Проверяем словарь context."""
         response = self.authorized_client.get(
             reverse('posts:post_edit', kwargs={'post_id': 5})
         )

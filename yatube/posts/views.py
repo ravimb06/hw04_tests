@@ -43,7 +43,6 @@ def profile(request, username):
     return render(request, template, context)
 
 
-
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     context = {
