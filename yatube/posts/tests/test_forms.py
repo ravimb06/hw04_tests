@@ -6,6 +6,8 @@ from django.urls import reverse
 
 User = get_user_model()
 
+POST_TEXT = 'Тестовый текст поста'
+
 
 class PostFormTests(TestCase):
     @classmethod
@@ -20,21 +22,15 @@ class PostFormTests(TestCase):
 
     def setUp(self):
         # Создаем клиент
-        self.user = User.objects.get(username=self.user)
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
     def test_create_post(self):
         """Валидная форма создает запись в Post."""
-        self.post = Post.objects.create(
-            group=self.group,
-            author=self.user,
-            text='Тестовый Текстовый пост ',
-        )
         posts_count = Post.objects.count()
         form_data = {
             'group': self.group.id,
-            'text': self.post.text,
+            'text': POST_TEXT,
         }
         response = self.authorized_client.post(
             reverse('posts:post_create'),
@@ -74,9 +70,5 @@ class PostFormTests(TestCase):
         self.assertRedirects(response, reverse(
             'posts:post_detail', kwargs={'post_id': self.post.pk}
         ))
-        self.assertTrue(
-            Post.objects.filter(
-                text=form_data['text'],
-                group=form_data['group']
-            ).exists()
-        )
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.text, form_data['text'])

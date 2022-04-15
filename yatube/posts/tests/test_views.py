@@ -19,22 +19,17 @@ class PostViewTest(TestCase):
             slug='test-slug_1',
             description='Тестовое описание',
         )
+        cls.post = Post.objects.create(
+            group=cls.group,
+            author=cls.user,
+            text='Тестовый Текстовый пост ',
+        )
 
     def setUp(self):
         self.guest_client = Client()
         self.user = PostViewTest.user
         self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
-        self.group = Group.objects.create(
-            title='Тестовая группа 2',
-            slug='test-slug_2',
-            description='Тестовое описание',
-        )
-        self.post = Post.objects.create(
-            group=self.group,
-            author=self.user,
-            text='Тестовый Текстовый пост ',
-        )
+        self.authorized_client.force_login(self.user)       
 
     def test_pages_uses_correct_template(self):
         """Проверяем правильные ли html-шаблоны используются."""
@@ -128,20 +123,20 @@ class PostViewTest(TestCase):
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
+        self.assertTrue(response.context.get('is_edit'))
 
 
 class PostPaginatorTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.numb_obj = settings.OBJ_IN_PAGE
         cls.user = User.objects.create_user(username='TestMan')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='test-slug',
             description='Тестовое описание',
         )
-        for i in range(16):
+        for i in range(settings.OBJ_IN_PAGE * 2):
             cls.post = Post.objects.create(
                 group=cls.group,
                 author=cls.user,
@@ -150,7 +145,6 @@ class PostPaginatorTest(TestCase):
 
     def setUp(self):
         self.guest_client = Client()
-        self.user = PostPaginatorTest.user
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
         self.cnt_obj = Post.objects.count()
@@ -158,13 +152,13 @@ class PostPaginatorTest(TestCase):
     def test_first_page_records_index(self):
         """Главная.Проверяем пагинатор на первой странице."""
         response = self.client.get(reverse('posts:index'))
-        self.assertEqual(len(response.context['page_obj']), self.numb_obj)
+        self.assertEqual(len(response.context['page_obj']), settings.OBJ_IN_PAGE)
 
     def test_second_page_records_index(self):
         """Главная.Проверяем пагинатор на второй странице."""
         response = self.client.get(reverse('posts:index') + '?page=2')
         self.assertEqual(len(
-            response.context['page_obj']), self.cnt_obj - self.numb_obj
+            response.context['page_obj']), self.cnt_obj - settings.OBJ_IN_PAGE
         )
 
     def test_first_page_records_group_list(self):
@@ -172,7 +166,9 @@ class PostPaginatorTest(TestCase):
         response = self.client.get(
             reverse('posts:group_list', kwargs={'slug': self.group.slug})
         )
-        self.assertEqual(len(response.context['page_obj']), self.numb_obj)
+        self.assertEqual(
+            len(response.context['page_obj']), settings.OBJ_IN_PAGE
+        )
 
     def test_second_page_records_group_list(self):
         """Группа.Проверяем пагинатор на второй странице группы."""
@@ -180,7 +176,7 @@ class PostPaginatorTest(TestCase):
             'posts:group_list', kwargs={'slug': self.group.slug}) + '?page=2'
         )
         self.assertEqual(len(
-            response.context['page_obj']), self.cnt_obj - self.numb_obj
+            response.context['page_obj']), self.cnt_obj - settings.OBJ_IN_PAGE
         )
 
     def test_first_page_records_profile(self):
@@ -188,7 +184,9 @@ class PostPaginatorTest(TestCase):
         response = self.client.get(
             reverse('posts:profile', kwargs={'username': 'TestMan'})
         )
-        self.assertEqual(len(response.context['page_obj']), self.numb_obj)
+        self.assertEqual(
+            len(response.context['page_obj']), settings.OBJ_IN_PAGE
+        )
 
     def test_second_page_records_profile(self):
         """Профиль.Проверяем пагинатор на второй странице."""
@@ -196,5 +194,5 @@ class PostPaginatorTest(TestCase):
             'posts:profile', kwargs={'username': 'TestMan'}) + '?page=2'
         )
         self.assertEqual(len(
-            response.context['page_obj']), self.cnt_obj - self.numb_obj
+            response.context['page_obj']), self.cnt_obj - settings.OBJ_IN_PAGE
         )

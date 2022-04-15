@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 
@@ -42,7 +43,7 @@ class PostURLTests(TestCase):
         for template, address in url_exists_at_desired.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
-                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_url_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
