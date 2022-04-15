@@ -1,4 +1,3 @@
-from itertools import count
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test import Client, TestCase
@@ -32,10 +31,10 @@ class PostViewTest(TestCase):
             description='Тестовое описание',
         )
         self.post = Post.objects.create(
-                group=self.group,
-                author=self.user,
-                text='Тестовый Текстовый пост ',
-            )
+            group=self.group,
+            author=self.user,
+            text='Тестовый Текстовый пост ',
+        )
 
     def test_pages_uses_correct_template(self):
         """Проверяем правильные ли html-шаблоны используются."""
@@ -130,6 +129,7 @@ class PostViewTest(TestCase):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
 
+
 class PostPaginatorTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -147,7 +147,7 @@ class PostPaginatorTest(TestCase):
                 author=cls.user,
                 text='Тестовый Текстовый пост ',
             )
-    
+
     def setUp(self):
         self.guest_client = Client()
         self.user = PostPaginatorTest.user

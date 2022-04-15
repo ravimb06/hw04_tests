@@ -1,4 +1,3 @@
-from posts.forms import PostForm
 from posts.models import Post, Group
 
 from django.contrib.auth import get_user_model
