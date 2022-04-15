@@ -29,7 +29,7 @@ class PostViewTest(TestCase):
         self.guest_client = Client()
         self.user = PostViewTest.user
         self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)       
+        self.authorized_client.force_login(self.user)
 
     def test_pages_uses_correct_template(self):
         """Проверяем правильные ли html-шаблоны используются."""
@@ -152,7 +152,9 @@ class PostPaginatorTest(TestCase):
     def test_first_page_records_index(self):
         """Главная.Проверяем пагинатор на первой странице."""
         response = self.client.get(reverse('posts:index'))
-        self.assertEqual(len(response.context['page_obj']), settings.OBJ_IN_PAGE)
+        self.assertEqual(
+            len(response.context['page_obj']), settings.OBJ_IN_PAGE
+        )
 
     def test_second_page_records_index(self):
         """Главная.Проверяем пагинатор на второй странице."""
