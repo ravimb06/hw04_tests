@@ -18,27 +18,23 @@ class PostFormTests(TestCase):
             slug='test-slug',
             description='Тестовое описание',
         )
-        # Создаем запись в базе данных для проверки сушествующего slug
-        cls.post = Post.objects.create(
-            group=cls.group,
-            author=cls.user,
-            text='Тестовый Текстовый пост ',
-        )
-        # Создаем форму, если нужна проверка атрибутов
-        cls.form = PostForm()
 
     def setUp(self):
-        # Создаем неавторизованный клиент
-        self.guest_client = Client()
+        # Создаем клиент
         self.user = User.objects.get(username=self.user)
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
     def test_create_post(self):
         """Валидная форма создает запись в Post."""
+        self.post = Post.objects.create(
+            group=self.group,
+            author=self.user,
+            text='Тестовый Текстовый пост ',
+        )
         posts_count = Post.objects.count()
         form_data = {
-            'group': PostFormTests.group.id,
+            'group': self.group.id,
             'text': self.post.text,
         }
         response = self.authorized_client.post(
@@ -52,30 +48,36 @@ class PostFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
-                text=self.post.text,
-                group=PostFormTests.group.id
+                text=form_data['text'],
+                group=form_data['group']
             ).exists()
         )
 
     def test_edit_post(self):
         """Валидная форма редактирует запись в Post."""
+        # Создаем запись в базе данных для проверки сушествующего slug
+        self.post = Post.objects.create(
+            group=self.group,
+            author=self.user,
+            text='Тестовый Текстовый пост ',
+        )
         form_data = {
             'text': 'Измененный текст',
-            'group': PostFormTests.group.id,
+            'group': self.group.id,
         }
         response = self.authorized_client.post(
             reverse(
-                'posts:post_edit', kwargs={'post_id': PostFormTests.post.pk}
+                'posts:post_edit', kwargs={'post_id': self.post.pk}
             ),
             data=form_data,
             follow=True
         )
         self.assertRedirects(response, reverse(
-            'posts:post_detail', kwargs={'post_id': PostFormTests.post.pk}
+            'posts:post_detail', kwargs={'post_id': self.post.pk}
         ))
         self.assertTrue(
             Post.objects.filter(
-                text='Измененный текст',
-                group=PostFormTests.group
+                text=form_data['text'],
+                group=form_data['group']
             ).exists()
         )

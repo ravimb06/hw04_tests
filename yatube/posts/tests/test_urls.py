@@ -25,8 +25,6 @@ class PostURLTests(TestCase):
     def setUp(self):
         # Создаем неавторизованный клиент
         self.guest_client = Client()
-        # Создаем пользователя
-        self.user = User.objects.create_user(username='HasNoName')
         # Создаем второй клиент
         self.authorized_client = Client()
         # Авторизуем пользователя
@@ -34,15 +32,11 @@ class PostURLTests(TestCase):
 
     def test_urls_exists_at_desired_location(self):
         """Страницы доступны любому пользователю."""
-        group = PostURLTests.group
-        user = PostURLTests.user
-        post = PostURLTests.post
-
         url_exists_at_desired = {
             '/posts/index.html': '/',
-            '/posts/group_list.html': f'/group/{group.slug}/',
-            '/posts/profile.html': f'/profile/{user.username}/',
-            '/posts/post_detail.html': f'/posts/{post.id}/',
+            '/posts/group_list.html': f'/group/{self.group.slug}/',
+            '/posts/profile.html': f'/profile/{self.user.username}/',
+            '/posts/post_detail.html': f'/posts/{self.post.id}/',
         }
 
         for template, address in url_exists_at_desired.items():
